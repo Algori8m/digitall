@@ -1,106 +1,132 @@
 let header = document.querySelector("header");
 let harmburger = document.querySelector(".harmburger");
-let mobileNav = document.querySelector(".mobileNavContainer")
-let closeHarmburger = document.querySelector(".closeHarmburger")
-let testimonials = document.querySelectorAll(".testimonial")
-let testimonialsControl = document.querySelectorAll(".tC span")
-let i = 0
-let u = (testimonials.length - 1)
-testimonials = [...testimonials]
-testimonialsControl = [...testimonialsControl]
+let mobileNav = document.querySelector(".mobileNavContainer");
+let closeHarmburger = document.querySelector(".closeHarmburger");
+let testimonials = document.querySelectorAll(".testimonial");
+let tCRight = document.querySelector(".tC .Right");
+let tCLeft = document.querySelector(".tC .Left");
+let testimonialsList = document.querySelector(".testimonialsList");
+let ourWork = document.querySelectorAll(".ourWork");
+let ourWorksList = document.querySelector(".ourWorksList");
+let oCRight = document.querySelector(".oC .Right");
+let oCLeft = document.querySelector(".oC .Left");
+let services = document.querySelectorAll(".weDoThis")
 
-function moveElementForward(pos, prev){
-        let prevElement = testimonials[prev]
-        let element = testimonials[pos];
-        testimonials.forEach((elem) =>{
-            elem.classList.remove("rTActive")
-        })
-        element.classList.remove("remove")
-        prevElement.classList.remove("tActive")
-        element.classList.remove("rTActive")
-        prevElement.classList.remove("eTActive")
+testimonials = [...testimonials];
+ourWork = [...ourWork];
+services = [...services];
+
+let totalLength = testimonialsList.offsetWidth * testimonials.length;
+
+let ototalLength = ourWorksList.offsetWidth * ourWork.length;
 
 
-        element.classList.add("tActive")
-        prevElement.classList.add("remove")
 
-        console.log(element);
-        console.log(prevElement);
+
+function headerBackground() {
+  if (window.scrollY >= 30) {
+    header.style.backgroundColor = "white";
+    header.style.boxShadow = "0 2px 10px rgba(0,0,0,0.5)";
+  } else {
+    header.style.backgroundColor = "rgba(0,0,0,0)";
+    header.style.boxShadow = "";
+  }
 }
 
-function moveElementBackward(pos, prev){
-    element = testimonials[pos]
-    prevElement = testimonials[prev]
-    testimonials.forEach((elem) =>{
-        elem.classList.remove("tActive")
-        elem.classList.remove("remove")
-    })
-
-    element.classList.add("rTActive");
-    prevElement.classList.remove("rTActive");
-
-
-    console.log(testimonials[pos])
-    console.log(testimonials[prev])
+function openMenu() {
+  mobileNav.classList.add("show");
 }
-
-function checkClick(){
-    if(this.classList.contains("Right")){
-        u = i - 1
-        if(i > (testimonials.length - 1)){
-            i = 0
-        }
-        if(i == 0){
-            u = testimonials.length-1
-        }
-        console.log(i)
-        console.log(u)
-        moveElementForward(i, u);
-        i++;
-    }else{
-        if(i <= 0){
-            i = testimonials.length-1;
-        }if(i >= testimonials.length-1){
-            i = testimonials.length-1
-            u = 0
-        }
-        console.log(i)
-        console.log(u)
-        moveElementBackward(i, u)
-        i--;
-        u = i + 1
-
-    }
-}
-
-
-testimonialsControl.forEach((arrow) =>{
-    arrow.addEventListener("click", checkClick)
-})
-
-
-
-
-
-
-function headerBackground(){
-    if(window.scrollY >= 30){
-        header.style.backgroundColor = "white";
-        header.style.boxShadow = "0 2px 10px rgba(0,0,0,0.5)";
-    }else{
-        header.style.backgroundColor = "rgba(0,0,0,0)";
-        header.style.boxShadow = "";
-    }
-}
-                    
-function openMenu(){
-        mobileNav.classList.add("show")
-    }
-function closeMenu(){
-        mobileNav.classList.remove("show")
+function closeMenu() {
+  mobileNav.classList.remove("show");
 }
 
 document.addEventListener("scroll", headerBackground);
 
 closeHarmburger.addEventListener("click", closeMenu);
 harmburger.addEventListener("click", openMenu);
+
+let length = totalLength - testimonials[0].offsetWidth;
+
+tCRight.addEventListener("click", () => {
+  if (testimonials.length * testimonialsList.scrollLeft >= totalLength - 2) {
+    testimonialsList.scrollLeft -= totalLength;
+  } else {
+    testimonialsList.scrollLeft += testimonials[0].offsetWidth;
+  }
+  console.log(testimonialsList.scrollLeft);
+});
+
+tCLeft.addEventListener("click", () => {
+  if (testimonialsList.scrollLeft <= 0) {
+    testimonialsList.scrollLeft += totalLength;
+  } else {
+    testimonialsList.scrollLeft -= testimonials[0].offsetWidth;
+  }
+});
+
+
+oCRight.addEventListener("click", () => {
+  if (ourWork.length * ourWorksList.scrollLeft >= ototalLength - 100) {
+    ourWorksList.scrollLeft -= ototalLength;
+  } else {
+    ourWorksList.scrollLeft += ourWork[0].offsetWidth;
+  }
+  console.log(ourWorksList.scrollLeft * ourWork.length);
+  console.log(totalLength);
+  console.log(ototalLength);
+});
+
+oCLeft.addEventListener("click", () => {
+  if (ourWorksList.scrollLeft <= 0) {
+    ourWorksList.scrollLeft += ototalLength;
+  } else {
+    ourWorksList.scrollLeft -= ourWork[0].offsetWidth;
+  }
+});
+
+
+
+// SETTING ANIMATION
+
+function scroll(){
+services.forEach(element => {
+/*
+const scrollInAt = (window.scrollY + window.innerHeight) - element.height / 2;
+const elementBottom = element.offsetTop + element.height;
+const isHalfShown = scrollInAt > element.offsetTop;
+const isNotScrolledPast = window.scrollY < elementBottom;
+*/
+const top = element.offsetTop + element.offsetHeight/2;
+const scrolled = window.scrollY; // window.innerHeight;
+const elementBottom = element.offsetTop + element.offsetHeight;
+
+const atTop = scrolled > top;
+const notPassed = window.scrollY < (elementBottom + 500);
+
+if(atTop && notPassed){
+  element.classList.remove("hide");
+  element.classList.add("slide");
+}else{
+  element.classList.add("hide");
+  element.classList.remove("slide");
+}
+});
+}
+
+
+function debounce(func, wait = 10, immediate = true) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
+
+window.addEventListener("scroll", debounce(scroll))
